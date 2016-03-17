@@ -23,9 +23,12 @@ def apod(message, wechat):
     return wechat.response_news([
         {
             'title': data.get('title'),
-            'description': u'日期: %s \n说明: %s\n版权: %s' % (
-                data.get('date'), data.get('explanation'), data.get('copyright')),
+            'description': u'日期: %s \n图片版权: %s \n 数据提供: <open>api.NASA.gov</data>' % (
+                data.get('date'), data.get('copyright')),
             'picurl': data.get('url'),
+        },
+        {
+            'description': data.get('explanation'),
             'url': 'http://apod.nasa.gov/apod/',
         }
     ])
