@@ -20,7 +20,7 @@ def get_handler(request, wechat):
         return 'Wrong'
 
 
-_default_response = u'当前版本: %s \n 命令清单: \n 【1】apod - %s \n ' % (__version__, u'欣赏天文美图')
+_default_response = u'输入字母 h 获取帮助 :-)\n 当前版本: %s ' % (__version__)
 
 
 def default_handler(message, wechat):
@@ -33,7 +33,7 @@ def handle_text_message(message, wechat):
 
 
 def handle_subscribe_event(message, wechat):
-    return wechat.response_text(content=u'感谢您的关注!\n试试输入命令 apod ')
+    return wechat.response_text(content=u'感谢您的关注!\n试试输入字母 h')
 
 
 _evt_msg_handler = {
