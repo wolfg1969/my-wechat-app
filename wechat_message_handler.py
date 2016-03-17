@@ -20,17 +20,15 @@ def get_handler(request, wechat):
         return 'Wrong'
 
 
-_default_response = u'当前版本: %s \n 命令清单: \n apod \n ' % __version__
+_default_response = u'当前版本: %s \n 命令清单: \n 【1】apod \n ' % __version__
 
 
 def default_handler(message, wechat):
-    print('default handler')
     return wechat.response_text(content=_default_response)
 
 
 def handle_text_message(message, wechat):
     command = getattr(wechat_bot, message.content.lower(), default_handler)
-    print(message.content.lower(), command)
     return command(message, wechat)
 
 
@@ -61,7 +59,7 @@ def post_handler(request, wechat):
     except ParseError:
         return 'Invalid Message Data'
 
-    handler = _msg_handler.get(wechat.message.__name__, default_handler)
+    handler = _msg_handler.get(wechat.message.__class__.__name__, default_handler)
 
     return handler(wechat.message, wechat)
 
