@@ -17,8 +17,10 @@ STATIC_DIR = os.environ['STATIC_DIR']
 def h(message, wechat):
     """帮助命令"""
     help_text = u"""命令列表:
+
 h - 打印此帮助信息
 apod - 欣赏每日天文美图
+
 更多命令, 敬请期待
 """
     return wechat.response_text(content=help_text)
