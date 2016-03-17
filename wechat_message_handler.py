@@ -20,7 +20,7 @@ def get_handler(request, wechat):
         return 'Wrong'
 
 
-_default_response = u'输入字母 h 获取帮助 :-)\n 当前版本: %s ' % (__version__)
+_default_response = u'输入字母 h 获取帮助 :-)\n当前版本: %s ' % __version__
 
 
 def default_handler(message, wechat):
