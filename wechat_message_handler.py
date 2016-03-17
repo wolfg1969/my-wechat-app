@@ -20,7 +20,7 @@ def get_handler(request, wechat):
         return 'Wrong'
 
 
-_default_response = u'当前版本: %s \n 命令清单: \n 【1】apod \n ' % __version__
+_default_response = u'当前版本: %s \n 命令清单: \n 【1】apod - %s \n ' % (__version__, u'欣赏天文美图')
 
 
 def default_handler(message, wechat):
