@@ -1,4 +1,5 @@
 #! encoding=utf-8
+from __future__ import print_function, unicode_literals
 from wechat_sdk.exceptions import ParseError
 
 import wechat_bot
@@ -55,7 +56,9 @@ def post_handler(request, wechat):
 
     try:
         wechat.parse_data(request.data)
+        print(wechat.message)
     except ParseError:
+        print('ParseError')
         return 'Invalid Message Data'
 
     handler = _msg_handler.get(wechat.message.__name__, default_handler)
