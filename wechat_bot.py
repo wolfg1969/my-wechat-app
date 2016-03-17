@@ -14,15 +14,16 @@ STATIC_BASE_URL = os.environ['STATIC_BASE_URL']
 STATIC_DIR = os.environ['STATIC_DIR']
 
 
+COMMANDS = {
+    'h': u'打印此帮助信息',
+    'apod': u'欣赏每日天文美图',
+}
+
+
 def h(message, wechat):
     """帮助命令"""
-    help_text = u"""命令列表:
-
-h - 打印此帮助信息
-apod - 欣赏每日天文美图
-
-更多命令, 敬请期待
-"""
+    help_text = u'命令列表:\n%s\n更多命令, 敬请期待' % ''.join(
+        ['%s - %s\n' % (command, COMMANDS[command]) for command in COMMANDS.keys()])
     return wechat.response_text(content=help_text)
 
 
