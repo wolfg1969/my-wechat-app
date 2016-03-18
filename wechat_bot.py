@@ -71,7 +71,7 @@ def apod(message, wechat):
         imaged = im.resize((360, new_height), Image.ANTIALIAS)
 
         output = StringIO.StringIO()
-        imaged.save(output, quality=90, format='jpg')
+        imaged.save(output, quality=90, format='jpeg')
 
         apod_image_message = {
             'title': data.get('title'),
