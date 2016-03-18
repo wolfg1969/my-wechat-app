@@ -12,6 +12,8 @@ __author__ = 'guoyong'
 @app.route('/wx', methods=['GET', 'POST'])
 def handle_wechat_msg():
 
+    app.logger.info('handle_wechat_msg')
+
     wechat = WechatBasic(conf=wechat_conf)
 
     handler_name = '%s_handler' % request.method.lower()
@@ -20,7 +22,7 @@ def handle_wechat_msg():
     return dispatch_method(request, wechat)
 
 
-@app.route('/wx/apod.jpg', methods=['GET'])
+@app.route('/apod', methods=['GET'])
 def apod_image():
 
     APOD_CACHE_KEY = app.config['APOD_CACHE_KEY']
