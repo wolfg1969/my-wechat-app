@@ -36,3 +36,8 @@ def apod_image():
     # response.headers['Content-Disposition'] = 'attachment; filename=apod.jpg'
     # return response
     return send_file(io.BytesIO(apod_image_message['picdata']))
+
+
+@app.route('/')
+def index():
+    return 'hello, world'
