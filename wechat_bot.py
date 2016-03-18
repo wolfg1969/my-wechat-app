@@ -1,9 +1,8 @@
-# encoding=utf-8
+# coding=utf-8
 from __future__ import print_function, unicode_literals
 
 import StringIO
 import io
-import pickle
 
 import pytz
 import requests
