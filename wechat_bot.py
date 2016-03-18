@@ -40,7 +40,7 @@ def apod(message, wechat):
     :return 包含每日天文美图的微信消息
     """
 
-    apod_image_message = redis_store.get(APOD_CACHE_KEY)
+    apod_image_message = redis_store.hgetall(APOD_CACHE_KEY)
 
     if not apod_image_message:
 
@@ -89,7 +89,7 @@ def apod(message, wechat):
             'picurl': '%s/apod.jpg' % BASE_URL,
         }
 
-        redis_store.set(APOD_CACHE_KEY, pickle.dumps(apod_image_message), int((apod_update_time - now).total_seconds()))
+        redis_store.hmset(APOD_CACHE_KEY, apod_image_message, int((apod_update_time - now).total_seconds()))
 
-    return wechat.response_news([pickle.loads(apod_image_message)])
+    return wechat.response_news([apod_image_message])
 
