@@ -39,7 +39,7 @@ def apod(message, wechat):
     :return 包含每日天文美图的微信消息
     """
 
-    redis = app.config.extensions['redis']
+    redis = app.extensions['redis']
     apod_image_message = redis.get(APOD_CACHE_KEY)
 
     if not apod_image_message:
