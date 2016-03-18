@@ -1,18 +1,22 @@
 # encoding=utf-8
 from __future__ import print_function, unicode_literals
 
-import os
-
+import StringIO
 import io
+
+import pytz
 import requests
+
 from PIL import Image
+from datetime import datetime, timedelta
+
+from wechat_app import app
 
 __author__ = 'guoyong'
 
-NASA_OPEN_API_KEY = os.environ['NASA_OPEN_API_KEY']
-STATIC_BASE_URL = os.environ['STATIC_BASE_URL']
-STATIC_DIR = os.environ['STATIC_DIR']
-
+NASA_OPEN_API_KEY = app.config['NASA_OPEN_API_KEY']
+BASE_URL = app.config['BASE_URL']
+APOD_CACHE_KEY = app.config['APOD_CACHE_KEY']
 
 COMMANDS = {
     'h': u'打印此帮助信息',
@@ -35,20 +39,20 @@ def apod(message, wechat):
     :return 包含每日天文美图的微信消息
     """
 
-    r = requests.get('https://api.nasa.gov/planetary/apod?api_key=%s' % NASA_OPEN_API_KEY)
+    redis = app.config.extensions['redis']
+    apod_image_message = redis.get(APOD_CACHE_KEY)
 
-    if r.status_code != 200:
-        return wechat.response_text(content=u'图片获取失败, 请稍后再试')
+    if not apod_image_message:
 
-    data = r.json()
+        r = requests.get('https://api.nasa.gov/planetary/apod?api_key=%s' % NASA_OPEN_API_KEY)
 
-    # download APOD
-    image_url = data.get('url')
-    image_date = data.get('date')
+        if r.status_code != 200:
+            return wechat.response_text(content=u'图片获取失败, 请稍后再试')
 
-    apod_image_filename = '%s/apod-%s.jpg' % (STATIC_DIR, image_date)
+        data = r.json()
 
-    if not os.path.isfile(apod_image_filename):
+        # download APOD
+        image_url = data.get('url')
 
         r = requests.get(image_url, stream=True)
         if r.status_code != 200:
@@ -65,15 +69,25 @@ def apod(message, wechat):
         new_height = int(new_width / aspect_ratio)
 
         imaged = im.resize((360, new_height), Image.ANTIALIAS)
-        imaged.save(apod_image_filename, quality=90)
 
-    return wechat.response_news([
-        {
-            'title': data.get('title'),
-            'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
-                data.get('date'), data.get('copyright')),
-            'picurl': '%s/apod-%s.jpg' % (STATIC_BASE_URL, image_date),
-            'url': 'http://apod.nasa.gov/apod/'
-        }
-    ])
+        output = StringIO.StringIO()
+        with output:
+            imaged.save(output, quality=90)
+
+            apod_image_message = {
+                'title': data.get('title'),
+                'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
+                    data.get('date'), data.get('copyright')),
+                'url': 'http://apod.nasa.gov/apod/',
+                'picurl': '%s/apod.jpg' % BASE_URL,
+                'picdata': output.getvalue()
+            }
+
+            now = datetime.now(tz=pytz.UTC)
+            tomorrow = now + timedelta(days=1)
+            apod_update_time = datetime(
+                tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
+            redis.set(APOD_CACHE_KEY, apod_image_message, int((apod_update_time - now).total_seconds()))
+
+    return wechat.response_news([apod_image_message])
 
