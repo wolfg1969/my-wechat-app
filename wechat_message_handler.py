@@ -28,7 +28,8 @@ def default_handler(message, wechat):
 
 
 def handle_text_message(message, wechat):
-    command = getattr(wechat_bot, message.content.lower(), default_handler)
+    command_text = wechat_bot.COMMANDS.get(message.content.lower(), '')
+    command = getattr(wechat_bot, command_text, default_handler)
     return command(message, wechat)
 
 
