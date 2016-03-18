@@ -2,7 +2,7 @@ import io
 from flask import request, send_file
 from wechat_sdk import WechatBasic
 
-from wechat_app import app, wechat_conf
+from wechat_app import app, redis_store, wechat_conf
 
 import wechat_message_handler
 
@@ -25,8 +25,7 @@ def handle_wechat_msg():
 @app.route('/apod.jpg', methods=['GET'])
 def apod_image():
 
-    redis_conn = app.extensions['redis']
-    apod_image_message = redis_conn.get(app.config['APOD_CACHE_KEY'])
+    apod_image_message = redis_store.get(app.config['APOD_CACHE_KEY'])
 
     if not apod_image_message:
         return 'APOD Not Found', 404

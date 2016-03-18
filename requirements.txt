@@ -1,6 +1,7 @@
 Flask
 Flask-And-Redis
 Pillow
+flask-redis
 pytz
 redis
 request

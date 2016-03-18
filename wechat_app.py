@@ -1,10 +1,11 @@
 from flask import Flask
-from flask_redis import Redis
+from flask.ext.redis import FlaskRedis
+from redis import StrictRedis
 from wechat_sdk import WechatConf
 
 app = Flask(__name__)
 app.config.from_envvar('MY_WECHAT_APP_SETTINGS')
-redis = Redis(app)
+redis_store = FlaskRedis.from_custom_provider(StrictRedis, app)
 
 wechat_conf = WechatConf(
     token=app.config['WX_TOKEN'],
