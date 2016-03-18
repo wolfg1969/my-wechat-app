@@ -1,5 +1,4 @@
-import io
-from flask import request, send_file, make_response
+from flask import request, make_response
 from wechat_sdk import WechatBasic
 
 from wechat_app import app, redis_store, wechat_conf
@@ -33,9 +32,7 @@ def apod_image():
 
     response = make_response(apod_image)
     response.headers['Content-Type'] = 'image/jpeg'
-    # response.headers['Content-Disposition'] = 'attachment; filename=apod.jpg'
     return response
-    # return send_file(io.BytesIO(apod_image))
 
 
 @app.route('/')
