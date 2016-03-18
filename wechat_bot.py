@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals
 
 import StringIO
 import io
+import pickle
 
 import pytz
 import requests
@@ -88,7 +89,7 @@ def apod(message, wechat):
             'picurl': '%s/apod.jpg' % BASE_URL,
         }
 
-        redis_store.set(APOD_CACHE_KEY, apod_image_message, int((apod_update_time - now).total_seconds()))
+        redis_store.set(APOD_CACHE_KEY, pickle.dump(apod_image_message), int((apod_update_time - now).total_seconds()))
 
-    return wechat.response_news([apod_image_message])
+    return wechat.response_news([pickle.loads(apod_image_message)])
 

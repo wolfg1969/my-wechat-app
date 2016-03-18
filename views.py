@@ -1,5 +1,5 @@
 import io
-from flask import request, send_file
+from flask import request, send_file, make_response
 from wechat_sdk import WechatBasic
 
 from wechat_app import app, redis_store, wechat_conf
@@ -31,11 +31,11 @@ def apod_image():
     if not apod_image:
         return 'APOD Not Found', 404
 
-    # response = make_response(image_binary)
-    # response.headers['Content-Type'] = 'image/jpeg'
+    response = make_response(apod_image)
+    response.headers['Content-Type'] = 'image/jpeg'
     # response.headers['Content-Disposition'] = 'attachment; filename=apod.jpg'
-    # return response
-    return send_file(io.BytesIO(apod_image))
+    return response
+    # return send_file(io.BytesIO(apod_image))
 
 
 @app.route('/')
