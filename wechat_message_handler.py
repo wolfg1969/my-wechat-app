@@ -55,7 +55,7 @@ _msg_handler = {
 def post_handler(request, wechat):
 
     try:
-        wechat.parse_data(request.data)
+        wechat.parse_data(unicode(request.data, 'utf-8'))
     except ParseError:
         return 'Invalid Message Data'
 
