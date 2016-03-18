@@ -72,21 +72,21 @@ def apod(message, wechat):
         output = StringIO.StringIO()
         imaged.save(output, quality=90, format='jpeg')
 
-        apod_image_message = {
-            'title': data.get('title'),
-            'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
-                data.get('date'), data.get('copyright')),
-            'url': 'http://apod.nasa.gov/apod/',
-            'picurl': '%s/apod.jpg' % BASE_URL,
-            'picdata': output.getvalue()
-        }
-
+        redis_store.set('%s:image' % APOD_CACHE_KEY, output.getvalue())
         output.close()
 
         now = datetime.now(tz=pytz.UTC)
         tomorrow = now + timedelta(days=1)
         apod_update_time = datetime(
             tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
+
+        apod_image_message = {
+            'title': data.get('title'),
+            'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
+                data.get('date'), data.get('copyright')),
+            'url': 'http://apod.nasa.gov/apod/',
+            'picurl': '%s/apod.jpg' % BASE_URL,
+        }
 
         redis_store.set(APOD_CACHE_KEY, apod_image_message, int((apod_update_time - now).total_seconds()))
 
