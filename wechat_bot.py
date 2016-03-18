@@ -89,7 +89,8 @@ def apod(message, wechat):
             'picurl': '%s/apod.jpg' % BASE_URL,
         }
 
-        redis_store.hmset(APOD_CACHE_KEY, apod_image_message, int((apod_update_time - now).total_seconds()))
+        redis_store.hmset(APOD_CACHE_KEY, apod_image_message)
+        redis_store.expire(APOD_CACHE_KEY, apod_update_time - now)
 
     return wechat.response_news([apod_image_message])
 
