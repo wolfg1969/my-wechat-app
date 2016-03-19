@@ -1,4 +1,4 @@
-from wechat_app import app
+from wx_app import app
 from views import *
 
 __author__ = 'guoyong'

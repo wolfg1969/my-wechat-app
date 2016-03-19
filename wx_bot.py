@@ -1,5 +1,4 @@
 # coding=utf-8
-from __future__ import print_function, unicode_literals
 
 import StringIO
 import io
@@ -10,7 +9,7 @@ import requests
 from PIL import Image
 from datetime import datetime, timedelta
 
-from wechat_app import app, redis_store
+from wx_app import app, redis_store
 
 __author__ = 'guoyong'
 
@@ -92,4 +91,3 @@ def apod(message, wechat):
         redis_store.expire(APOD_CACHE_KEY, apod_update_time - now)
 
     return wechat.response_news([apod_image_message])
-

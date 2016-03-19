@@ -1,8 +1,7 @@
 # coding=utf-8
-from __future__ import print_function, unicode_literals
 from wechat_sdk.exceptions import ParseError
 
-import wechat_bot
+import wx_bot
 
 __author__ = 'guoyong'
 __version__ = '0.1'
@@ -28,8 +27,9 @@ def default_handler(message, wechat):
 
 
 def handle_text_message(message, wechat):
-    command_text = wechat_bot.COMMANDS.get(message.content.lower(), '')
-    command = getattr(wechat_bot, command_text, default_handler)
+    # command_text = wx_bot.COMMANDS.get(message.content.lower(), '')
+    command_text = str(bytearray(message.content, 'utf-8'))
+    command = getattr(wx_bot, command_text, default_handler)
     return command(message, wechat)
 
 
