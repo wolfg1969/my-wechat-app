@@ -40,7 +40,11 @@ def apod(message, wechat):
 
     apod_image_message = redis_store.hgetall(APOD_CACHE_KEY)
 
+    app.logger.debug(apod_image_message)
+
     if not apod_image_message:
+
+        app.logger.info('get new apod')
 
         r = requests.get('https://api.nasa.gov/planetary/apod?api_key=%s' % NASA_OPEN_API_KEY)
 

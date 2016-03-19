@@ -26,12 +26,12 @@ def handle_wechat_msg():
 def apod_image():
 
     key = '%s:image' % app.config['APOD_CACHE_KEY']
-    apod_image = redis_store.get(key)
+    image_data = redis_store.get(key)
 
-    if not apod_image:
+    if image_data is None:
         return 'APOD Not Found', 404
 
-    response = make_response(apod_image)
+    response = make_response(image_data)
     response.headers['Content-Type'] = 'image/jpeg'
     return response
 
