@@ -83,12 +83,13 @@ def apod(message, wechat):
         apod_update_time = datetime(
             tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
 
+        apod_date = data.get('date')
         apod_image_message = {
             'title': data.get('title'),
             'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
-                data.get('date'), data.get('copyright')),
+                apod_date, data.get('copyright', 'Public')),
             'url': 'http://apod.nasa.gov/apod/',
-            'picurl': '%s/apod.jpg' % BASE_URL,
+            'picurl': '%s/apod-%s.jpg' % (BASE_URL, apod_date)
         }
 
         redis_store.hmset(APOD_CACHE_KEY, apod_image_message)
