@@ -27,8 +27,7 @@ def default_handler(message, wechat):
 
 
 def handle_text_message(message, wechat):
-    # command_text = wx_bot.COMMANDS.get(message.content.lower(), '')
-    command_text = str(bytearray(message.content, 'utf-8'))
+    command_text = str(bytearray(message.content, 'utf-8'))  # getattr 必须用 string 类型的参数
     command = getattr(wx_bot, command_text, default_handler)
     return command(message, wechat)
 
