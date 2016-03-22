@@ -22,11 +22,10 @@ def handle_wechat_msg():
     return dispatch_method(request, wechat)
 
 
-@app.route('/apod-<apod_date>.jpg', methods=['GET'])
-def apod_image(apod_date):
+@app.route('/apod-<image_cache_key>.jpg', methods=['GET'])
+def apod_image(image_cache_key):
 
-    key = '%s:%s:image' % (app.config['APOD_CACHE_KEY'], apod_date)
-    image_data = redis_store.get(key)
+    image_data = redis_store.get(image_cache_key)
 
     if image_data is None:
         return 'APOD Not Found', 404

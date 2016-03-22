@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import StringIO
+import hashlib
 import io
 
 import pytz
@@ -56,6 +57,9 @@ def apod(message, wechat):
 
         data = r.json()
 
+        title = data.get('title')
+        apod_date = data.get('date')
+
         # download APOD
         image_url = data.get('url')
 
@@ -78,16 +82,18 @@ def apod(message, wechat):
         output = StringIO.StringIO()
         imaged.save(output, quality=90, format='jpeg')
 
-        redis_store.set('%s:image' % cache_key, output.getvalue())
+        m = hashlib.md5()
+        m.update('%s:%s' % (apod_date, title))
+        image_cache_key = m.hexdigest()
+        redis_store.set(image_cache_key, output.getvalue())
         output.close()
 
-        apod_date = data.get('date')
         apod_image_message = {
-            'title': data.get('title'),
+            'title': title,
             'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
                 apod_date, data.get('copyright', 'Public')),
             'url': 'http://apod.nasa.gov/apod/',
-            'picurl': '%s/apod-%s.jpg' % (BASE_URL, yesterday)
+            'picurl': '%s/apod-%s.jpg' % (BASE_URL, image_cache_key)
         }
 
         redis_store.hmset(cache_key, apod_image_message)
