@@ -81,7 +81,8 @@ def apod(message, wechat):
 
         m = hashlib.md5()
         m.update(output.getvalue())
-        image_cache_key = '%s:%s' % (APOD_CACHE_KEY, m.hexdigest())
+        digest = m.hexdigest()
+        image_cache_key = '%s:%s' % (APOD_CACHE_KEY, digest)
         redis_store.set(image_cache_key, output.getvalue())
         output.close()
 
@@ -90,7 +91,7 @@ def apod(message, wechat):
             'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
                 data.get('date'), data.get('copyright', 'Public')),
             'url': 'http://apod.nasa.gov/apod/',
-            'picurl': '%s/apod-%s.jpg' % (BASE_URL, image_cache_key)
+            'picurl': '%s/apod-%s.jpg' % (BASE_URL, digest)
         }
 
         redis_store.hmset(cache_key, apod_image_message)
