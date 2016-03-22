@@ -25,7 +25,7 @@ def handle_wechat_msg():
 @app.route('/apod-<apod_date>.jpg', methods=['GET'])
 def apod_image(apod_date):
 
-    key = '%s:image' % app.config['APOD_CACHE_KEY']
+    key = '%s:%s:image' % (app.config['APOD_CACHE_KEY'], apod_date)
     image_data = redis_store.get(key)
 
     if image_data is None:

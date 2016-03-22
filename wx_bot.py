@@ -37,8 +37,11 @@ def apod(message, wechat):
     :param wechat 微信接口
     :return 包含每日天文美图的微信消息
     """
+    now = datetime.now(tz=pytz.timezone('Asia/Shanghai'))
+    yesterday = (now - timedelta(days=1)).strftime('%Y-%m-%d')
 
-    apod_image_message = redis_store.hgetall(APOD_CACHE_KEY)
+    cache_key = '%s:%s' % (APOD_CACHE_KEY, yesterday)
+    apod_image_message = redis_store.hgetall(cache_key)
 
     app.logger.debug(apod_image_message)
 
@@ -46,7 +49,7 @@ def apod(message, wechat):
 
         app.logger.info('get new apod')
 
-        r = requests.get('https://api.nasa.gov/planetary/apod?api_key=%s' % NASA_OPEN_API_KEY)
+        r = requests.get('https://api.nasa.gov/planetary/apod?api_key=%s&date=%s' % (NASA_OPEN_API_KEY, yesterday))
 
         if r.status_code != 200:
             return wechat.response_text(content=u'图片获取失败, 请稍后再试')
@@ -75,13 +78,8 @@ def apod(message, wechat):
         output = StringIO.StringIO()
         imaged.save(output, quality=90, format='jpeg')
 
-        redis_store.set('%s:image' % APOD_CACHE_KEY, output.getvalue())
+        redis_store.set('%s:image' % cache_key, output.getvalue())
         output.close()
-
-        now = datetime.now(tz=pytz.UTC)
-        tomorrow = now + timedelta(days=1)
-        apod_update_time = datetime(
-            tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
 
         apod_date = data.get('date')
         apod_image_message = {
@@ -89,10 +87,10 @@ def apod(message, wechat):
             'description': u'日期: %s \n图片版权: %s \n数据提供: <open>api.NASA.gov</data>' % (
                 apod_date, data.get('copyright', 'Public')),
             'url': 'http://apod.nasa.gov/apod/',
-            'picurl': '%s/apod-%s.jpg' % (BASE_URL, apod_date)
+            'picurl': '%s/apod-%s.jpg' % (BASE_URL, yesterday)
         }
 
-        redis_store.hmset(APOD_CACHE_KEY, apod_image_message)
-        redis_store.expire(APOD_CACHE_KEY, apod_update_time - now)
+        redis_store.hmset(cache_key, apod_image_message)
+        redis_store.expire(cache_key, 86400)
 
     return wechat.response_news([apod_image_message])
